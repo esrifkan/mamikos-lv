@@ -48,4 +48,12 @@ class User extends Authenticatable
   {
     return $this->belongsToMany(Role::class, "user_has_roles");
   }
+
+  /**
+   * @return \Illuminate\Database\Eloquent\Relations\HasMany
+   */
+  public function rooms(): HasMany
+  {
+    return $this->hasMany(Room::class, "user_id");
+  }
 }

@@ -5,11 +5,11 @@ return [
     "id" => "owner",
     "title" => "Owner",
     "capabilities" => [
-      "roomCreate",
-      "roomEdit",
-      "roomDelete",
-      "roomList",
-      "roomDetail",
+      "room:create",
+      "room:edit",
+      "room:delete",
+      "room:list",
+      "room:detail",
     ],
     "credit" => [
       "register" => 0
@@ -19,8 +19,8 @@ return [
     "id" => "user-general",
     "title" => "User",
     "capabilities" => [
-      "askRoomAvailability",
-      "roomDetail",
+      "room:availability",
+      "room:detail",
     ],
     "credit" => [
       "register" => 20
@@ -30,8 +30,8 @@ return [
     "id" => "user-premium",
     "title" => "User Premium",
     "capabilities" => [
-      "askRoomAvailability",
-      "roomDetail",
+      "room:availability",
+      "room:detail",
     ],
     "credit" => [
       "register" => 40
