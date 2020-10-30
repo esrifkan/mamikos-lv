@@ -23,5 +23,9 @@ $api->version("v1", ["namespace" => "App\Http\Controllers\Api"], function ($api)
       $api->post("/owner", "RegisterController@owner")->name("post.register.owner");
       $api->post("/tenant", "RegisterController@tenant")->name("post.register.tenant");
     });
+    $api->group(["prefix" => "/token"], function ($api) {
+      $api->post("/owner", "LoginController@owner")->name("post.login.token.owner");
+      $api->post("/tenant", "LoginController@tenant")->name("post.login.token.tenant");
+    });
   });
 });
