@@ -1,11 +1,37 @@
 version: "3.7"
 
 networks:
+  data:
+    driver: bridge
+    name: networks-data
   main:
     driver: bridge
     name: networks-api
 
 services:
+  mariadb:
+    build:
+      args:
+        - http_proxy
+        - https_proxy
+      context: ./.docker/mariadb
+      dockerfile: Dockerfile
+    container_name: mamikos.lv.db
+    environment:
+      - MYSQL_DATABASE=${DOCKER_MARIADB_DATABASE}
+      - MYSQL_USER=${DOCKER_MARIADB_USER}
+      - MYSQL_PASSWORD=${DOCKER_MARIADB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DOCKER_MARIADB_ROOT_PASSWORD}
+      - SERVICE_NAME=mariadb
+    image: mamikos/lv/db:development
+    networks:
+      - data
+    restart: unless-stopped
+    volumes:
+      - ./.docker/mariadb/mysql:/var/lib/mysql
+      - ./logs/mysql:/var/log/mysql
+      - ./docker/mariadb/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+
   nginx:
     build:
       args:
@@ -35,6 +61,7 @@ services:
     container_name: mamikos.lv.engine
     image: mamikos/lv/engine:development
     networks:
+      - data
       - main
     restart: unless-stopped
     volumes:
