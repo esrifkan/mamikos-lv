@@ -15,6 +15,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+$api = app(\Dingo\Api\Routing\Router::class);
+
+$api->version("v1", ["namespace" => "App\Http\Controllers\Api"], function ($api) {
+  $api->group(["namespace" => "Auth", "prefix" => "auth"], function ($api) {
+    $api->group(["prefix" => "/register"], function ($api) {
+      $api->post("/owner", "RegisterController@owner")->name("post.register.owner");
+      $api->post("/tenant", "RegisterController@tenant")->name("post.register.tenant");
+    });
+  });
 });

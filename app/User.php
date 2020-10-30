@@ -3,13 +3,15 @@
 namespace App;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-  use Notifiable;
+  use HasApiTokens, Notifiable;
 
   /**
    * The attributes that are mass assignable.
@@ -40,10 +42,10 @@ class User extends Authenticatable
   ];
 
   /**
-   * @return \Illuminate\Database\Eloquent\Relations\HasMany
+   * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
    */
-  public function occupancies(): HasMany
+  public function roles(): BelongsToMany
   {
-    return $this->hasMany(Occupancy::class, "user_id");
+    return $this->belongsToMany(Role::class, "user_has_roles");
   }
 }
