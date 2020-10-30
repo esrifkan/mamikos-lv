@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 
 $api = app(\Dingo\Api\Routing\Router::class);
 
-$api->version("v1", ["namespace" => "App\Http\Controllers\Api"], function ($api) {
+$api->version("v1", ["middleware" => ["api"], "namespace" => "App\Http\Controllers\Api"], function ($api) {
   $api->group(["namespace" => "Auth", "prefix" => "auth"], function ($api) {
     $api->group(["prefix" => "/register"], function ($api) {
       $api->post("/owner", "RegisterController@owner")->name("post.register.owner");
@@ -27,5 +27,9 @@ $api->version("v1", ["namespace" => "App\Http\Controllers\Api"], function ($api)
       $api->post("/owner", "LoginController@owner")->name("post.login.token.owner");
       $api->post("/tenant", "LoginController@tenant")->name("post.login.token.tenant");
     });
+  });
+
+  $api->group(["middleware" => ["auth:sanctum"]], function ($api) {
+    $api->get("/me", "UserController@me")->name("get.me");
   });
 });
