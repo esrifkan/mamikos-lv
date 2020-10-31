@@ -35,6 +35,7 @@ $api->version("v1", ["middleware" => ["api"], "namespace" => "App\Http\Controlle
 
   $api->group(["prefix" => "room"], function ($api) {
     $api->group(["middleware" => "auth:sanctum"], function ($api) {
+      $api->get("/", "RoomController@index")->name("get.room.list");
       $api->post("/", "RoomController@store");
       $api->group(["prefix" => "/{code}"], function ($api) {
         $api->delete("/", "RoomController@delete");

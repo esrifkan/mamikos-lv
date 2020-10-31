@@ -74,6 +74,28 @@ class RoomController extends Controller
   }
 
   /**
+   * @param \Dingo\Api\Http\Request   $request
+   */
+  public function index(Request $request)
+  {
+    /** Get the current user. */
+    $user = $request->user();
+
+    if (false === $user->tokenCan("room:list")) {
+      throw new \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException("You don't have the right permission to access this action.");
+    }
+
+    /** Fetch the rooms for current user. */
+    $rooms = \App\Room::whereHas("user", function($query) use($user) {
+      $query->where("id", $user->id);
+    })->orderBy("created_at", "DESC")->get();
+
+    return response()->json([
+      "data" => $rooms
+    ]);
+  }
+
+  /**
    * @param \Dingo\Api\Http\Request $request
    */
   public function store(Request $request)
