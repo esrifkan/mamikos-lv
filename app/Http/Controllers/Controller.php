@@ -23,4 +23,15 @@ class Controller extends BaseController
       throw new \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException("You don't have enough credit point to access this action.");
     }
   }
+
+  /**
+   * @param bool $enable
+   * @throws \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException
+   */
+  protected function assureCanAccess(bool $enable)
+  {
+    if (false === $enable) {
+      throw new \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException("You don't have the right permission to access this action.");
+    }
+  }
 }

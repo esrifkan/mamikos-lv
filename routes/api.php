@@ -33,12 +33,13 @@ $api->version("v1", ["middleware" => ["api"], "namespace" => "App\Http\Controlle
     $api->get("/me", "UserController@me")->name("get.me");
   });
 
-  $api->group(["prefix" => "room"], function ($api) {
+  $api->group(["prefix" => "rooms"], function ($api) {
     $api->group(["middleware" => "auth:sanctum"], function ($api) {
       $api->get("/", "RoomController@index")->name("get.room.list");
       $api->post("/", "RoomController@store");
       $api->group(["prefix" => "/{code}"], function ($api) {
         $api->delete("/", "RoomController@delete");
+        $api->get("/", "RoomController@show")->name("get.room.show");
         $api->put("/", "RoomController@update");
         $api->get("/availability", "RoomController@availability");
       });

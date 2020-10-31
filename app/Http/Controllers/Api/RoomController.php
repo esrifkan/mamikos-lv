@@ -105,6 +105,25 @@ class RoomController extends Controller
   }
 
   /**
+   * @param string  $code
+   * @param \Dingo\Api\Http\Request   $request
+   */
+  public function show(string $code, Request $request)
+  {
+    /** Get the current user. */
+    $user = $request->user();
+
+    $this->assureCanAccess(true === $user->tokenCan("room:detail"));
+
+    /** Get the selected room. */
+    $room = \App\Room::where("id", $code)->first();
+
+    return response()->json([
+      "data" => $room
+    ]);
+  }
+
+  /**
    * @param \Dingo\Api\Http\Request $request
    */
   public function store(Request $request)
