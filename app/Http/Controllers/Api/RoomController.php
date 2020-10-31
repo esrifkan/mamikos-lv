@@ -139,6 +139,8 @@ class RoomController extends Controller
       "description" => ["nullable"],
       "lat" => ["nullable", "numeric"],
       "lng" => ["nullable", "numeric"],
+      "location" => ["required", "exists:locations,id"],
+      "price" => ["required", "numeric", "min:0"],
       "title" => ["required", "string", "max:255"],
       "total" => ["required", "numeric", "min:1"]
     ])->validate();
@@ -148,14 +150,18 @@ class RoomController extends Controller
       "description" => $request->input("description"),
       "lat" => $request->input("lat") ?: null,
       "lng" => $request->input("lng") ?: null,
+      "price" => $request->input("price"),
       "title" => $request->input("title"),
       "total" => $request->input("total"),
     ]);
+    /** Associate room to location. */
+    $room->location()->associate(\App\Location::find($request->input("location")));
 
     /** Store the room for logged user. */
     $request->user()->rooms()->save(
       $room
     );
+
 
     /** Dispatch event. */
     event(new \App\Events\Room\Created($room));
@@ -194,12 +200,18 @@ class RoomController extends Controller
       "description" => ["nullable"],
       "lat" => ["nullable", "numeric"],
       "lng" => ["nullable", "numeric"],
+      "location" => ["nullable", "exists:locations,id"],
       "title" => ["nullable", "string", "max:255"],
       "total" => ["nullable", "numeric", "min:1"]
     ])->validate();
 
     foreach ($request->only(["availability", "description", "lat", "lng", "title", "total"]) as $key => $value) {
       $room->{$key} = $value;
+    }
+
+    /** Associate room to location. */
+    if ($request->has("location")) {
+      $room->location()->associate(\App\Location::find($request->input("location")));
     }
 
     /** Update the room. */
