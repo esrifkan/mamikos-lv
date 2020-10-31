@@ -30,6 +30,7 @@ $api->version("v1", ["middleware" => ["api"], "namespace" => "App\Http\Controlle
   });
 
   $api->group(["middleware" => ["auth:sanctum"]], function ($api) {
+    $api->get("/explore", "ExploreController@search")->name("explore.search");
     $api->get("/me", "UserController@me")->name("get.me");
   });
 

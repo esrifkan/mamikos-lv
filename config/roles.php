@@ -21,6 +21,7 @@ return [
     "capabilities" => [
       "room:availability",
       "room:detail",
+      "room:explore"
     ],
     "credit" => [
       "register" => 20,
@@ -35,6 +36,7 @@ return [
     "capabilities" => [
       "room:availability",
       "room:detail",
+      "room:explore"
     ],
     "credit" => [
       "register" => 40,
