@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Collection\Room as CollectionRoom;
+use App\Http\Resources\Room;
 use Dingo\Api\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -44,6 +46,8 @@ class RoomController extends Controller
       "data" => [
         "availability" => 0 < $room->availability
       ]
+    ], 200, [
+      "Content-Type" => "application/vnd.api+json"
     ]);
   }
 
@@ -79,13 +83,16 @@ class RoomController extends Controller
       "data" => [
         "delete" => $delete
       ]
+    ], 200, [
+      "Content-Type" => "application/vnd.api+json"
     ]);
   }
 
   /**
    * @param \Dingo\Api\Http\Request   $request
+   * @return \App\Http\Resources\Collection\Room
    */
-  public function index(Request $request)
+  public function index(Request $request): CollectionRoom
   {
     /** Get the current user. */
     $user = $request->user();
@@ -95,20 +102,18 @@ class RoomController extends Controller
     }
 
     /** Fetch the rooms for current user. */
-    $rooms = \App\Room::whereHas("user", function($query) use($user) {
+    $rooms = \App\Room::whereHas("user", function ($query) use ($user) {
       $query->where("id", $user->id);
     })->orderBy("created_at", "DESC")->get();
 
-    return response()->json([
-      "data" => $rooms
-    ]);
+    return new CollectionRoom($rooms, $user);
   }
 
   /**
    * @param string  $code
    * @param \Dingo\Api\Http\Request   $request
    */
-  public function show(string $code, Request $request)
+  public function show(string $code, Request $request): Room
   {
     /** Get the current user. */
     $user = $request->user();
@@ -116,17 +121,15 @@ class RoomController extends Controller
     $this->assureCanAccess(true === $user->tokenCan("room:detail"));
 
     /** Get the selected room. */
-    $room = \App\Room::where("id", $code)->first();
+    $room = \App\Room::where("id", $code)->with("location")->first();
 
-    return response()->json([
-      "data" => $room
-    ]);
+    return new Room($room, $user);
   }
 
   /**
    * @param \Dingo\Api\Http\Request $request
    */
-  public function store(Request $request)
+  public function store(Request $request): Room
   {
     $user = $request->user();
 
@@ -166,16 +169,14 @@ class RoomController extends Controller
     /** Dispatch event. */
     event(new \App\Events\Room\Created($room));
 
-    return response()->json([
-      "data" => $room
-    ]);
+    return new Room($room, $user);
   }
 
   /**
    * @param string  $code
    * @param \Dingo\Api\Http\Request $request
    */
-  public function update(string $code, Request $request)
+  public function update(string $code, Request $request): Room
   {
     $user = $request->user();
 
@@ -184,7 +185,7 @@ class RoomController extends Controller
     }
 
     /** Get the selected room. */
-    $room = \App\Room::where("id", $code)->whereHas("user", function ($query) use ($user) {
+    $room = \App\Room::where("id", $code)->with("location")->whereHas("user", function ($query) use ($user) {
       $query->where("id", $user->id);
     })->first();
 
@@ -222,8 +223,6 @@ class RoomController extends Controller
       event(new \App\Events\Room\Updated($room));
     }
 
-    return response()->json([
-      "data" => $room
-    ]);
+    return new Room($room);
   }
 }
