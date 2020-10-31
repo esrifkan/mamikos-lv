@@ -11,7 +11,7 @@ class Room extends Model
    * @var array
    */
   protected $fillable = [
-    "description", "lat", "lng", "title", "total",
+    "description", "lat", "lng", "price", "title", "total",
   ];
 
   /**
@@ -21,9 +21,13 @@ class Room extends Model
     "availability" => "integer",
     "lat" => "float",
     "lng" => "float",
+    "price" => "integer",
     "total" => "integer",
   ];
 
+  /**
+   * @var void
+   */
   public static function boot()
   {
     parent::boot();
@@ -36,10 +40,18 @@ class Room extends Model
         : $model->total;
     });
 
-    static::updating(function($model) {
+    static::updating(function ($model) {
       /** Force update the `availability` when greater than `total`. */
       $model->availability = $model->availability > $model->total ? $model->total : $model->availability;
     });
+  }
+
+  /**
+   * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+   */
+  public function location(): BelongsTo
+  {
+    return $this->belongsTo(Location::class);
   }
 
   /**

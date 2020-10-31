@@ -22,6 +22,7 @@ class CreateTableRooms extends Migration
       $table->string("total", 10)->default(0);
       $table->string("lat", 10)->nullable();
       $table->string("lng", 10)->nullable();
+      $table->unsignedBigInteger("price")->default(0);
       $table->timestamps();
 
       $table->foreign("user_id")->references("id")->on("users")->onUpdate("cascade")->onDelete("cascade");
