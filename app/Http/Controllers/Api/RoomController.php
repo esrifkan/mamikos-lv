@@ -12,6 +12,36 @@ class RoomController extends Controller
    * @param string  $code
    * @param \Dingo\Api\Http\Request   $request
    */
+  public function availability(string $code, Request $request)
+  {
+    /** Get the current user. */
+    $user = $request->user();
+
+    if (false === $user->tokenCan("room:availability")) {
+      throw new \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException("You don't have the right permission to access this action.");
+    }
+
+    /** get the selected room. */
+    $room = \App\Room::where("id", $code)->first();
+    if (!$room) {
+      /** Throws an error. */
+      throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("Whoops, the room were not exist.");
+    }
+
+    /** Dispatch event */
+    event(new \App\Events\Room\Availability($room, $user));
+
+    return response()->json([
+      "data" => [
+        "availability" => 0 < $room->availability
+      ]
+    ]);
+  }
+
+  /**
+   * @param string  $code
+   * @param \Dingo\Api\Http\Request   $request
+   */
   public function delete(string $code, Request $request)
   {
     $user = $request->user();
@@ -40,27 +70,6 @@ class RoomController extends Controller
       "data" => [
         "delete" => $delete
       ]
-    ]);
-  }
-
-  public function index()
-  {
-  }
-
-  public function show(string $code, Request $request)
-  {
-    /** Get the selected room. */
-    $room = \App\Room::where("id", $code)->first();
-
-    /** Get the current user. */
-    // $user = $request->user();
-    $user = \App\User::find(1);
-
-    /** Dispatch event. */
-    // event(new \App\Events\Room\Show($room, $user));
-
-    return response()->json([
-      "data" => $room
     ]);
   }
 
