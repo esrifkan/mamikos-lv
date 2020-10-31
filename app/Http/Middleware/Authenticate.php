@@ -18,24 +18,10 @@ class Authenticate extends Middleware
    */
   protected function unauthenticated($request, array $guards)
   {
-    $redirectTo = false === in_array("api", $guards) ? $this->redirectTo($request) : null;
-    throw new AuthenticationException(
-      'Unauthenticated.',
-      $guards,
-      $redirectTo
-    );
-  }
-
-  /**
-   * Get the path the user should be redirected to when they are not authenticated.
-   *
-   * @param  \Illuminate\Http\Request  $request
-   * @return string|null
-   */
-  protected function redirectTo($request)
-  {
     if (!$request->expectsJson()) {
       return route('login');
     }
+
+    throw new \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException("Unauthorized", "Unauthenticated.");
   }
 }

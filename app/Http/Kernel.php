@@ -40,6 +40,7 @@ class Kernel extends HttpKernel
     ],
 
     'api' => [
+      \App\Http\Middleware\AcceptApiJson::class,
       \App\Http\Middleware\ContentTypeApiJson::class,
       \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
       'throttle:60,1',
