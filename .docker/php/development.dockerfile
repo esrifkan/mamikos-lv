@@ -22,16 +22,13 @@ RUN curl -s http://getcomposer.org/installer | php && \
 
 COPY ./php.ini /usr/local/etc/php/php.ini
 COPY ./pool.conf /usr/local/etc/php-fpm.d/
-COPY ./config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-#
-#--------------------------------------------------------------------------
-# Crontab
-#--------------------------------------------------------------------------
-#
-COPY ./config/crontabs /var/spool/cron/crontabs/default
+### Crontab ###
+COPY ./crontabs/default /var/spool/cron/crontabs/
 RUN cat /var/spool/cron/crontabs/default >> /var/spool/cron/crontabs/root
 RUN touch /var/log/cron.log
+
+COPY ./config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Clean up
 RUN rm -rf /tmp/* /var/tmp/*
