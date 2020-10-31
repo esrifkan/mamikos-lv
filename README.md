@@ -68,7 +68,7 @@ Run the following command to run the worker with specific connection to database
 $ php artisan queue:work database --tries=3 --timeout=300
 ```
 
-To keep the `queue:work` process running permanently in the background, you should use a process monitor such as (Supervisor)[https://laravel.com/docs/7.x/queues#supervisor-configuration] to ensure that the queue worker does not stop running.
+To keep the `queue:work` process running permanently in the background, you should use a process monitor such as [Supervisor](https://laravel.com/docs/7.x/queues#supervisor-configuration) to ensure that the queue worker does not stop running.
 
 You may have to restart your server.
 
@@ -83,7 +83,7 @@ $ docker-compose up --build -d
 
 Run the following command to enter the container:
 ```
-docker exec mamikos.lv.engine /bin/sh
+docker exec -it mamikos.lv.engine /bin/sh
 ```
 
 After the please follow the instructions at [Launch the starter project](#launch-the-starter-project)
