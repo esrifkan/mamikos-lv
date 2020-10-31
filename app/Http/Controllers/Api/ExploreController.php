@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Collection\Room as CollectionRoom;
 use Dingo\Api\Http\Request;
 
 class ExploreController extends Controller
@@ -18,7 +19,7 @@ class ExploreController extends Controller
     $this->assureCanAccess(true === $user->tokenCan("room:explore"));
 
     $filter = $request->input("filter");
-    $rooms = \App\Room::orderBy("price", $request->input("sort") ?: "ASC");
+    $rooms = \App\Room::with("location")->orderBy("price", $request->input("sort") ?: "ASC");
     /** Filter by name. */
     if (false === empty($filter["name"])) {
       $rooms = $rooms->where("title", "like", "%{$filter["name"]}%");
@@ -40,8 +41,6 @@ class ExploreController extends Controller
       });
     }
 
-    return response()->json([
-      "data" => $rooms->get()
-    ]);
+    return new CollectionRoom($rooms->get(), $user);
   }
 }
