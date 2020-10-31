@@ -43,6 +43,27 @@ class RoomController extends Controller
     ]);
   }
 
+  public function index()
+  {
+  }
+
+  public function show(string $code, Request $request)
+  {
+    /** Get the selected room. */
+    $room = \App\Room::where("id", $code)->first();
+
+    /** Get the current user. */
+    // $user = $request->user();
+    $user = \App\User::find(1);
+
+    /** Dispatch event. */
+    // event(new \App\Events\Room\Show($room, $user));
+
+    return response()->json([
+      "data" => $room
+    ]);
+  }
+
   /**
    * @param \Dingo\Api\Http\Request $request
    */
@@ -79,6 +100,56 @@ class RoomController extends Controller
 
     /** Dispatch event. */
     event(new \App\Events\Room\Created($room));
+
+    return response()->json([
+      "data" => $room
+    ]);
+  }
+
+  /**
+   * @param string  $code
+   * @param \Dingo\Api\Http\Request $request
+   */
+  public function update(string $code, Request $request)
+  {
+    $user = $request->user();
+
+    if (false === $user->tokenCan("room:edit")) {
+      throw new \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException("Unauthorized", "You don't have the right permission to access this action.");
+    }
+
+    /** Get the selected room. */
+    $room = \App\Room::where("id", $code)->whereHas("user", function ($query) use ($user) {
+      $query->where("id", $user->id);
+    })->first();
+
+    if (!$room) {
+      /** Throws an error. */
+      throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException("Whoops, the room were not exist.");
+    }
+
+    /** Validate incoming request. */
+    $maxTotal = $request->has("total") ?: $room->total;
+    Validator::make($request->all(), [
+      "availability" => ["nullable", "numeric", "min:0", "max:{$maxTotal}"],
+      "description" => ["nullable"],
+      "lat" => ["nullable", "numeric"],
+      "lng" => ["nullable", "numeric"],
+      "title" => ["nullable", "string", "max:255"],
+      "total" => ["nullable", "numeric", "min:1"]
+    ])->validate();
+
+    foreach ($request->only(["availability", "description", "lat", "lng", "title", "total"]) as $key => $value) {
+      $room->{$key} = $value;
+    }
+
+    /** Update the room. */
+    $room->save();
+
+    /** Trigger event when the room's attributes were changed. */
+    if (true === $room->wasChanged()) {
+      event(new \App\Events\Room\Updated($room));
+    }
 
     return response()->json([
       "data" => $room

@@ -38,6 +38,7 @@ $api->version("v1", ["middleware" => ["api"], "namespace" => "App\Http\Controlle
       $api->post("/", "RoomController@store");
       $api->group(["prefix" => "/{code}"], function ($api) {
         $api->delete("/", "RoomController@delete");
+        $api->put("/", "RoomController@update");
       });
     });
   });
