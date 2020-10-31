@@ -1,0 +1,48 @@
+version: "3.7"
+
+networks:
+  data:
+    driver: bridge
+    name: networks-data
+  main:
+    driver: bridge
+    name: networks-api
+
+volumes:
+  share:
+
+services:
+  nginx:
+    build:
+      args:
+        - http_proxy
+        - https_proxy
+      context: ./.docker/nginx
+    container_name: mamikos.lv.server
+    depends_on:
+      - php
+    image: mamikos/lv/server:1.0
+    networks:
+      - main
+    ports:
+      - 80:80
+      - 443:443
+    restart: unless-stopped
+    volumes:
+      - share:/var/www
+
+  php:
+    build:
+      args:
+        - http_proxy
+        - https_proxy
+      context: ./
+      dockerfile: Dockerfile
+    container_name: mamikos.lv.engine
+    image: mamikos/lv/engine:1.0
+    networks:
+      - data
+      - main
+    restart: unless-stopped
+    volumes:
+      - share:/var/www
