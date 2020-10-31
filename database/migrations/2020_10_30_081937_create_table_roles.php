@@ -20,8 +20,10 @@ class CreateTableRoles extends Migration
     });
 
     Schema::create("user_has_roles", function (Blueprint $table) {
+      $table->id();
       $table->unsignedBigInteger("user_id");
       $table->unsignedBigInteger("role_id");
+      $table->unsignedBigInteger("credit")->default(0);
       $table->foreign('user_id')
         ->references('id')
         ->on("users")
