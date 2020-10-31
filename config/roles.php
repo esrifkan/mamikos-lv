@@ -23,7 +23,10 @@ return [
       "room:detail",
     ],
     "credit" => [
-      "register" => 20
+      "register" => 20,
+      "room" => [
+        "availability" => -5
+      ]
     ]
   ],
   "user-premium" => [
@@ -34,7 +37,10 @@ return [
       "room:detail",
     ],
     "credit" => [
-      "register" => 40
+      "register" => 40,
+      "room" => [
+        "availability" => -5
+      ]
     ]
   ]
 ];

@@ -18,6 +18,8 @@ class EventServiceProvider extends ServiceProvider
     Registered::class => [
       SendEmailVerificationNotification::class,
     ],
-    \App\Events\Room\Availability::class => []
+    \App\Events\Room\Availability::class => [
+      \App\Listeners\User\SetCredit::class
+    ]
   ];
 }

@@ -21,6 +21,15 @@ class RoomController extends Controller
       throw new \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException("You don't have the right permission to access this action.");
     }
 
+    /** Make sure the credit point still enough. */
+    $token = $user->currentAccessToken();
+
+    /** Get the current user's role is being used. */
+    $role = $user->roles->firstWhere("name", $token->name);
+
+    /** Make sure the user's credit still enough. */
+    $this->assureEnoughCredit($role);
+
     /** get the selected room. */
     $room = \App\Room::where("id", $code)->first();
     if (!$room) {
@@ -29,7 +38,7 @@ class RoomController extends Controller
     }
 
     /** Dispatch event */
-    event(new \App\Events\Room\Availability($room, $user));
+    event(new \App\Events\Room\Availability($room, $user, $role));
 
     return response()->json([
       "data" => [
@@ -47,7 +56,7 @@ class RoomController extends Controller
     $user = $request->user();
 
     if (false === $user->tokenCan("room:delete")) {
-      throw new \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException("Unauthorized", "You don't have the right permission to access this action.");
+      throw new \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException("You don't have the right permission to access this action.");
     }
 
     /** Get the selected room. */
@@ -103,7 +112,7 @@ class RoomController extends Controller
     $user = $request->user();
 
     if (false === $user->tokenCan("room:create")) {
-      throw new \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException("Unauthorized", "You don't have the right permission to access this action.");
+      throw new \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException("You don't have the right permission to access this action.");
     }
 
     /** Validate the incoming request. */
@@ -146,7 +155,7 @@ class RoomController extends Controller
     $user = $request->user();
 
     if (false === $user->tokenCan("room:edit")) {
-      throw new \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException("Unauthorized", "You don't have the right permission to access this action.");
+      throw new \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException("You don't have the right permission to access this action.");
     }
 
     /** Get the selected room. */
